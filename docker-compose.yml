@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - Document registry and audit logs
+  postgres:
+    image: postgres:15-alpine
+    container_name: confidential-rag-postgres
+    environment:
+      POSTGRES_USER: raguser
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
+      POSTGRES_DB: confidentialrag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U raguser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ChromaDB - Vector database for embeddings
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: confidential-rag-chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
+      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMA_AUTH_TOKEN:-CHANGE_ME}
+      - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Ollama - Local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: confidential-rag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Midnight Local Dev Node (to be configured)
+  # midnight-node:
+  #   image: midnight/local-dev:latest
+  #   container_name: confidential-rag-midnight
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - midnight-data:/midnight
+  #   environment:
+  #     - MIDNIGHT_NETWORK=local
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: confidential-rag-backend
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+      - embeddings-cache:/app/embeddings_cache
+    environment:
+      - DATABASE_URL=postgresql://raguser:ragpass@postgres:5432/confidentialrag
+      - CHROMA_URL=http://chromadb:8000
+      - CHROMA_AUTH_TOKEN=test-token
+      - OLLAMA_URL=http://ollama:11434
+      - MIDNIGHT_RPC_URL=http://localhost:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Streamlit Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: confidential-rag-frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+
+volumes:
+  postgres-data:
+  chroma-data:
+  ollama-data:
+  midnight-data:
+  embeddings-cache:
+
+networks:
+  default:
+    name: confidential-rag-network
