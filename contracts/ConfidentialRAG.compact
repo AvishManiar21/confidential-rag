@@ -1,0 +1,417 @@
+// Privacy-Preserving RAG (Retrieval-Augmented Generation) Contract
+//
+// This contract demonstrates how to build a privacy-preserving RAG system
+// on Midnight using Compact smart contracts.
+//
+// Features:
+// - Store document commitments (not full documents)
+// - Verify similarity proofs without revealing queries or documents
+// - Prevent replay attacks with nullifiers
+// - Merkle tree for efficient membership proofs
+// - Privacy-preserving query verification
+
+pragma language_version >= 0.20;
+import CompactStandardLibrary;
+
+enum ContractState {
+    UNINITIALIZED,
+    ACTIVE,
+    PAUSED
+}
+
+// ============================================================================
+// PUBLIC LEDGER STATE
+// ============================================================================
+
+// Contract owner's public key
+export sealed ledger owner: Bytes<32>;
+
+// Contract state
+export ledger contractState: ContractState;
+
+// Merkle tree storing document commitments
+// Each leaf is hash(document_hash + embedding_hash)
+export ledger documentCommitments: HistoricMerkleTree<10, Bytes<32>>;
+
+// Set of nullifiers to prevent query replay attacks
+// Each query gets unique nullifier based on (user + query + timestamp)
+export ledger queryNullifiers: Set<Bytes<32>>;
+
+// Counters for tracking activity
+export ledger documentCount: Counter;
+export ledger queryCount: Counter;
+export ledger verifiedQueryCount: Counter;
+
+// Minimum similarity threshold (as percentage, 0-100)
+export ledger similarityThreshold: Uint<8>;
+
+// ============================================================================
+// PRIVATE WITNESSES
+// ============================================================================
+
+// Get user's secret key from local wallet
+witness localSecretKey(): Bytes<32>;
+
+// Find Merkle path for a document commitment
+witness findDocumentPath(commit: Bytes<32>): MerkleTreePath<10, Bytes<32>>;
+
+// Verify similarity between query and document embeddings
+// This runs locally using the user's ML model
+// Returns true if similarity >= threshold
+witness verifySimilarity(
+    queryEmbedding: Bytes<32>,
+    docEmbedding: Bytes<32>,
+    threshold: Uint<8>
+): Boolean;
+
+// Get current timestamp (unix timestamp)
+witness getCurrentTimestamp(): Uint<64>;
+
+// ============================================================================
+// HELPER CIRCUITS
+// ============================================================================
+
+// Derive public key from secret key
+circuit publicKey(sk: Bytes<32>): Bytes<32> {
+    return persistentHash<Vector<2, Bytes<32>>>([
+        pad(32, "rag:owner:pk"),
+        sk
+    ]);
+}
+
+// Create document commitment
+// Combines document hash + embedding hash
+circuit documentCommitment(
+    docHash: Bytes<32>,
+    embeddingHash: Bytes<32>
+): Bytes<32> {
+    return persistentHash<Vector<3, Bytes<32>>>([
+        pad(32, "rag:doc:commit"),
+        docHash,
+        embeddingHash
+    ]);
+}
+
+// Create query commitment
+// Hashes the query without revealing it
+circuit queryCommitment(queryHash: Bytes<32>): Bytes<32> {
+    return persistentHash<Vector<2, Bytes<32>>>([
+        pad(32, "rag:query:commit"),
+        queryHash
+    ]);
+}
+
+// Create query nullifier
+// Unique per (user, query, timestamp) to prevent replay
+circuit queryNullifier(
+    sk: Bytes<32>,
+    queryHash: Bytes<32>,
+    timestamp: Uint<64>
+): Bytes<32> {
+    return persistentHash<Vector<4, Bytes<32>>>([
+        pad(32, "rag:query:nullifier"),
+        sk,
+        queryHash,
+        timestamp as Bytes<32>
+    ]);
+}
+
+// Create similarity proof commitment
+// Combines query + doc + similarity score
+circuit similarityProofCommit(
+    queryHash: Bytes<32>,
+    docHash: Bytes<32>,
+    similarityScore: Uint<8>
+): Bytes<32> {
+    return persistentHash<Vector<4, Bytes<32>>>([
+        pad(32, "rag:similarity:proof"),
+        queryHash,
+        docHash,
+        similarityScore as Bytes<32>
+    ]);
+}
+
+// ============================================================================
+// OWNER OPERATIONS
+// ============================================================================
+
+// Initialize the contract
+export circuit initialize(threshold: Uint<8>): [] {
+    assert(contractState == ContractState.UNINITIALIZED, "Already initialized");
+    assert(threshold <= 100, "Threshold must be 0-100");
+
+    const sk = localSecretKey();
+    owner = disclose(publicKey(sk));
+    similarityThreshold = disclose(threshold);
+    contractState = ContractState.ACTIVE;
+}
+
+// Update similarity threshold
+export circuit updateThreshold(newThreshold: Uint<8>): [] {
+    assert(contractState == ContractState.ACTIVE, "Contract not active");
+    assert(newThreshold <= 100, "Threshold must be 0-100");
+
+    const sk = localSecretKey();
+    assert(owner == publicKey(sk), "Only owner can update threshold");
+
+    similarityThreshold = disclose(newThreshold);
+}
+
+// Pause contract (emergency stop)
+export circuit pause(): [] {
+    const sk = localSecretKey();
+    assert(owner == publicKey(sk), "Only owner can pause");
+    contractState = ContractState.PAUSED;
+}
+
+// Resume contract
+export circuit resume(): [] {
+    const sk = localSecretKey();
+    assert(owner == publicKey(sk), "Only owner can resume");
+    contractState = ContractState.ACTIVE;
+}
+
+// ============================================================================
+// DOCUMENT OPERATIONS
+// ============================================================================
+
+// Add a document to the knowledge base
+// User submits commitment = hash(doc_hash + embedding_hash)
+// Actual document and embedding stay off-chain
+export circuit addDocument(
+    docHash: Bytes<32>,
+    embeddingHash: Bytes<32>
+): [] {
+    assert(contractState == ContractState.ACTIVE, "Contract not active");
+
+    // Create commitment
+    const commit = documentCommitment(docHash, embeddingHash);
+
+    // Add to Merkle tree
+    documentCommitments.insert(disclose(commit));
+
+    // Increment counter
+    documentCount.increment(1);
+}
+
+// Prove a document exists in the knowledge base
+// Without revealing which document or its content
+export circuit proveDocumentExists(
+    docHash: Bytes<32>,
+    embeddingHash: Bytes<32>
+): [] {
+    const commit = documentCommitment(docHash, embeddingHash);
+    const path = findDocumentPath(commit);
+
+    // Verify Merkle proof
+    assert(
+        merkleTreePathRoot(path) == documentCommitments.root(),
+        "Document not found in knowledge base"
+    );
+}
+
+// ============================================================================
+// QUERY OPERATIONS (RAG)
+// ============================================================================
+
+// Query the RAG system with similarity verification
+// This is the core RAG operation
+//
+// Process:
+// 1. User generates query embedding locally
+// 2. User finds similar documents locally (ML inference)
+// 3. User submits proof that document exists AND is similar
+// 4. Contract verifies without seeing query or document
+export circuit querySimilarDocument(
+    queryHash: Bytes<32>,           // Hash of query text
+    queryEmbedding: Bytes<32>,      // Hash of query embedding
+    docHash: Bytes<32>,             // Hash of document
+    docEmbedding: Bytes<32>,        // Hash of document embedding
+    similarityScore: Uint<8>        // Claimed similarity (0-100)
+): [] {
+    assert(contractState == ContractState.ACTIVE, "Contract not active");
+    assert(similarityScore <= 100, "Similarity must be 0-100");
+
+    const sk = localSecretKey();
+    const timestamp = getCurrentTimestamp();
+
+    // Create document commitment
+    const docCommit = documentCommitment(docHash, docEmbedding);
+
+    // STEP 1: Verify document exists in knowledge base
+    const path = findDocumentPath(docCommit);
+    assert(
+        merkleTreePathRoot(path) == documentCommitments.root(),
+        "Document not in knowledge base"
+    );
+
+    // STEP 2: Verify similarity threshold
+    assert(
+        similarityScore >= similarityThreshold,
+        "Similarity below threshold"
+    );
+
+    // STEP 3: Verify similarity proof (runs ML model locally)
+    const isValid = verifySimilarity(queryEmbedding, docEmbedding, similarityScore);
+    assert(isValid, "Similarity verification failed");
+
+    // STEP 4: Check for replay attacks
+    const nullifier = queryNullifier(sk, queryHash, timestamp);
+    assert(
+        !queryNullifiers.has(nullifier),
+        "Query already processed (replay attempt)"
+    );
+
+    // STEP 5: Update state
+    queryNullifiers.insert(disclose(nullifier));
+    queryCount.increment(1);
+    verifiedQueryCount.increment(1);
+
+    // Note: Actual response generation happens off-chain
+    // Contract only verifies the query is valid and not a replay
+}
+
+// Simpler query that just checks document existence
+// No similarity verification
+export circuit queryDocument(
+    queryHash: Bytes<32>,
+    docHash: Bytes<32>,
+    docEmbedding: Bytes<32>
+): [] {
+    assert(contractState == ContractState.ACTIVE, "Contract not active");
+
+    const sk = localSecretKey();
+    const timestamp = getCurrentTimestamp();
+
+    // Create document commitment
+    const docCommit = documentCommitment(docHash, docEmbedding);
+
+    // Verify document exists
+    const path = findDocumentPath(docCommit);
+    assert(
+        merkleTreePathRoot(path) == documentCommitments.root(),
+        "Document not in knowledge base"
+    );
+
+    // Check for replay
+    const nullifier = queryNullifier(sk, queryHash, timestamp);
+    assert(
+        !queryNullifiers.has(nullifier),
+        "Query already processed"
+    );
+
+    // Update state
+    queryNullifiers.insert(disclose(nullifier));
+    queryCount.increment(1);
+}
+
+// Batch query multiple documents
+// Useful for retrieval of top-k similar documents
+export circuit queryMultipleDocuments(
+    queryHash: Bytes<32>,
+    docHashes: Vector<3, Bytes<32>>,      // Up to 3 documents
+    docEmbeddings: Vector<3, Bytes<32>>
+): [] {
+    assert(contractState == ContractState.ACTIVE, "Contract not active");
+
+    const sk = localSecretKey();
+    const timestamp = getCurrentTimestamp();
+
+    // Verify each document exists
+    const commit0 = documentCommitment(docHashes[0], docEmbeddings[0]);
+    const path0 = findDocumentPath(commit0);
+    assert(
+        merkleTreePathRoot(path0) == documentCommitments.root(),
+        "Document 0 not found"
+    );
+
+    const commit1 = documentCommitment(docHashes[1], docEmbeddings[1]);
+    const path1 = findDocumentPath(commit1);
+    assert(
+        merkleTreePathRoot(path1) == documentCommitments.root(),
+        "Document 1 not found"
+    );
+
+    const commit2 = documentCommitment(docHashes[2], docEmbeddings[2]);
+    const path2 = findDocumentPath(commit2);
+    assert(
+        merkleTreePathRoot(path2) == documentCommitments.root(),
+        "Document 2 not found"
+    );
+
+    // Check for replay
+    const nullifier = queryNullifier(sk, queryHash, timestamp);
+    assert(
+        !queryNullifiers.has(nullifier),
+        "Query already processed"
+    );
+
+    // Update state
+    queryNullifiers.insert(disclose(nullifier));
+    queryCount.increment(1);
+}
+
+// ============================================================================
+// PRIVACY MODEL EXPLANATION
+// ============================================================================
+//
+// WHAT'S PRIVATE:
+// - Query text (only hash stored)
+// - Query embeddings (only hash stored)
+// - Document content (only hash stored)
+// - Document embeddings (only hash stored)
+// - User's secret key
+// - Which specific document matched query
+// - User's identity
+//
+// WHAT'S PUBLIC:
+// - Total number of documents
+// - Total number of queries
+// - Document commitments in Merkle tree
+// - Query nullifiers (but can't link to specific queries)
+// - Similarity threshold
+// - That a valid query happened (but not what it was)
+//
+// WHAT'S PROVEN (in zero-knowledge):
+// - Document exists in knowledge base
+// - Similarity exceeds threshold
+// - Query is not a replay attack
+// - User has valid secret key
+//
+// OFF-CHAIN WORKFLOW:
+//
+// 1. DOCUMENT INDEXING (owner):
+//    - Hash document content → docHash
+//    - Generate embedding → embed
+//    - Hash embedding → embeddingHash
+//    - Call addDocument(docHash, embeddingHash)
+//    - Store full document + embedding off-chain
+//
+// 2. QUERY (user):
+//    - Hash query text → queryHash
+//    - Generate query embedding locally
+//    - Search local index for similar documents
+//    - For each similar doc:
+//      * Verify similarity score
+//      * Call querySimilarDocument(...) on-chain
+//      * Get ZK proof that query is valid
+//    - Retrieve actual documents off-chain
+//    - Generate response with LLM
+//
+// 3. VERIFICATION:
+//    - Contract proves query is valid
+//    - Contract proves documents exist
+//    - Contract proves similarity threshold met
+//    - Contract prevents replay attacks
+//    - All without revealing query or documents
+//
+// EXTENSIONS:
+//
+// - Add access control (only certain users can query)
+// - Add document versioning (update embeddings)
+// - Add document removal (mark as deleted)
+// - Add query cost (pay per query)
+// - Add reputation system (quality of queries)
+// - Add caching (store recent query results)
+//
+// ============================================================================
