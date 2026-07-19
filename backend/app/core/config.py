@@ -27,7 +27,9 @@ class Settings(BaseSettings):
     ollama_model: str = "llama2"
 
     # Midnight
-    midnight_rpc_url: str = "http://localhost:8080"
+    midnight_node_url: str = "http://localhost:8080"
+    midnight_indexer_url: str = "http://localhost:8081"
+    midnight_proof_server_url: str = "http://localhost:6300"
     midnight_contract_address: Optional[str] = None
     midnight_private_key: Optional[str] = None
 

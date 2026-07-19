@@ -1,0 +1,25 @@
+{
+  "name": "confidential-rag-midnight",
+  "version": "1.0.0",
+  "description": "Midnight blockchain integration for ConfidentialRAG",
+  "type": "module",
+  "scripts": {
+    "compile": "docker compose run --rm compact-compiler compact compile contracts/ConfidentialRAG.compact -o build/",
+    "deploy": "node scripts/deploy.mjs",
+    "interact": "node scripts/interact.mjs",
+    "test": "node scripts/test.mjs"
+  },
+  "dependencies": {
+    "@midnight-ntwrk/midnight-js-types": "latest",
+    "@midnight-ntwrk/midnight-js-contracts": "latest",
+    "@midnight-ntwrk/midnight-js-http-client": "latest",
+    "@midnight-ntwrk/midnight-js-utils": "latest",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

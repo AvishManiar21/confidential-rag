@@ -53,16 +53,65 @@ services:
       timeout: 10s
       retries: 3
 
-  # Midnight Local Dev Node (to be configured)
-  # midnight-node:
-  #   image: midnight/local-dev:latest
-  #   container_name: confidential-rag-midnight
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - midnight-data:/midnight
-  #   environment:
-  #     - MIDNIGHT_NETWORK=local
+  # Midnight Local Devnet - Node + Indexer + Proof Server
+  midnight-node:
+    image: ghcr.io/midnightntwrk/node:latest
+    container_name: confidential-rag-midnight-node
+    ports:
+      - "8080:8080"
+    volumes:
+      - midnight-node-data:/data
+    environment:
+      - NETWORK=undeployed
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  midnight-indexer:
+    image: ghcr.io/midnightntwrk/indexer:latest
+    container_name: confidential-rag-midnight-indexer
+    ports:
+      - "8081:8081"
+    volumes:
+      - midnight-indexer-data:/data
+    environment:
+      - NODE_URL=http://midnight-node:8080
+      - LOG_LEVEL=info
+    depends_on:
+      midnight-node:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  midnight-proof-server:
+    image: midnightntwrk/proof-server:latest
+    container_name: confidential-rag-proof-server
+    ports:
+      - "6300:6300"
+    command: midnight-proof-server -v
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6300/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Compact Compiler Service (for Windows compatibility)
+  compact-compiler:
+    image: ghcr.io/midnightntwrk/compact:latest
+    container_name: confidential-rag-compact
+    volumes:
+      - ./contracts:/workspace/contracts
+      - ./midnight-build:/workspace/build
+    working_dir: /workspace
+    command: tail -f /dev/null  # Keep container running
+    profiles:
+      - tools  # Only start when explicitly requested
 
   # FastAPI Backend
   backend:
@@ -80,7 +129,10 @@ services:
       - CHROMA_URL=http://chromadb:8000
       - CHROMA_AUTH_TOKEN=${CHROMA_AUTH_TOKEN}
       - OLLAMA_URL=http://ollama:11434
-      - MIDNIGHT_RPC_URL=${MIDNIGHT_RPC_URL:-http://localhost:8080}
+      - MIDNIGHT_NODE_URL=http://midnight-node:8080
+      - MIDNIGHT_INDEXER_URL=http://midnight-indexer:8081
+      - MIDNIGHT_PROOF_SERVER_URL=http://midnight-proof-server:6300
+      - MIDNIGHT_CONTRACT_ADDRESS=${MIDNIGHT_CONTRACT_ADDRESS:-}
       - SECRET_KEY=${SECRET_KEY}
     depends_on:
       postgres:
@@ -111,7 +163,8 @@ volumes:
   postgres-data:
   chroma-data:
   ollama-data:
-  midnight-data:
+  midnight-node-data:
+  midnight-indexer-data:
   embeddings-cache:
 
 networks:

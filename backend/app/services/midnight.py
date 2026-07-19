@@ -16,10 +16,15 @@ class MidnightService:
 
     def __init__(self):
         """Initialize Midnight service."""
-        self.rpc_url = settings.midnight_rpc_url
+        self.node_url = settings.midnight_node_url
+        self.indexer_url = settings.midnight_indexer_url
+        self.proof_server_url = settings.midnight_proof_server_url
         self.contract_address = settings.midnight_contract_address
         self.private_key = settings.midnight_private_key
-        logger.info(f"Initialized Midnight service, RPC: {self.rpc_url}")
+        logger.info(f"Initialized Midnight service")
+        logger.info(f"  Node: {self.node_url}")
+        logger.info(f"  Indexer: {self.indexer_url}")
+        logger.info(f"  Proof Server: {self.proof_server_url}")
 
     @retry(
         stop=stop_after_attempt(3),
@@ -173,23 +178,49 @@ class MidnightService:
             logger.error(f"Error retrieving Merkle root: {str(e)}")
             return None
 
-    async def check_connection(self) -> bool:
+    async def check_connection(self) -> Dict[str, bool]:
         """
-        Check connection to Midnight RPC.
+        Check connection to Midnight services.
 
         Returns:
-            bool: True if connected
+            Dict: Status of each service (node, indexer, proof_server)
         """
+        status = {
+            "node": False,
+            "indexer": False,
+            "proof_server": False
+        }
+
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    f"{self.rpc_url}/health",
-                    timeout=5.0
-                )
-                return response.status_code == 200
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                # Check Midnight Node
+                try:
+                    response = await client.get(f"{self.node_url}/health")
+                    status["node"] = response.status_code == 200
+                    logger.info(f"Midnight Node: {'✓ Connected' if status['node'] else '✗ Unreachable'}")
+                except Exception as e:
+                    logger.warning(f"Cannot connect to Midnight Node: {str(e)}")
+
+                # Check Indexer
+                try:
+                    response = await client.get(f"{self.indexer_url}/health")
+                    status["indexer"] = response.status_code == 200
+                    logger.info(f"Midnight Indexer: {'✓ Connected' if status['indexer'] else '✗ Unreachable'}")
+                except Exception as e:
+                    logger.warning(f"Cannot connect to Midnight Indexer: {str(e)}")
+
+                # Check Proof Server
+                try:
+                    response = await client.get(f"{self.proof_server_url}/health")
+                    status["proof_server"] = response.status_code == 200
+                    logger.info(f"Proof Server: {'✓ Connected' if status['proof_server'] else '✗ Unreachable'}")
+                except Exception as e:
+                    logger.warning(f"Cannot connect to Proof Server: {str(e)}")
+
         except Exception as e:
-            logger.warning(f"Cannot connect to Midnight RPC: {str(e)}")
-            return False
+            logger.error(f"Error checking Midnight connections: {str(e)}")
+
+        return status
 
 
 # Global instance
