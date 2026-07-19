@@ -83,6 +83,10 @@ Demo scenario: Healthcare providers query medical literature while preserving pa
 git clone https://github.com/AvishManiar21/confidential-rag.git
 cd confidential-rag
 
+# Configure environment variables
+cp .env.example .env
+# Edit .env and set all required values (POSTGRES_PASSWORD, CHROMA_AUTH_TOKEN, SECRET_KEY)
+
 # One-command setup (installs everything)
 ./scripts/setup-all.sh
 
@@ -112,6 +116,13 @@ make demo-query
 
 **Step 1: Environment Setup**
 ```bash
+# Configure environment variables (REQUIRED)
+cp .env.example .env
+# Edit .env and set all required values:
+#   - POSTGRES_PASSWORD (strong password for database)
+#   - CHROMA_AUTH_TOKEN (token for ChromaDB authentication)
+#   - SECRET_KEY (generate with: openssl rand -hex 32)
+
 # Install Midnight CLI
 npm install -g @midnight-ntwrk/compact-cli @midnight-ntwrk/midnight-cli
 
