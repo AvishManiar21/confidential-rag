@@ -76,71 +76,155 @@ Demo scenario: Healthcare providers query medical literature while preserving pa
 
 ## Quick Start
 
-### Prerequisites
+**Get up and running in 5 minutes:**
 
+```bash
+# Clone repository
+git clone https://github.com/YOUR_USERNAME/confidential-rag.git
+cd confidential-rag
+
+# One-command setup (installs everything)
+./scripts/setup-all.sh
+
+# Start all services
+make start
+
+# Upload demo medical data
+make demo-upload
+
+# Run demo queries
+make demo-query
+
+# Access the UI
+# http://localhost:8501
+```
+
+### Alternative: Manual Setup
+
+<details>
+<summary>Click to expand manual setup instructions</summary>
+
+**Prerequisites:**
 - Docker & Docker Compose
 - Node.js 18+ (for Midnight)
 - Python 3.10+
 - Git
 
-### Installation
-
+**Step 1: Environment Setup**
 ```bash
-# Clone repository
-git clone <repo-url>
-cd confidential-rag
+# Install Midnight CLI
+npm install -g @midnight-ntwrk/compact-cli @midnight-ntwrk/midnight-cli
 
-# Install Midnight local dev environment
-npm install -g @midnight-ntwrk/midnight-cli
-midnight-cli init
-
-# Start services
+# Start Docker services
 docker-compose up -d
 
-# Install Python dependencies
+# Create Python virtual environment
 cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# Run backend
-uvicorn app.main:app --reload
-
-# Run frontend (new terminal)
-cd frontend
-streamlit run app.py
 ```
 
-### Deploy Smart Contract
+**Step 2: Database Setup**
+```bash
+# Run migrations
+cd backend
+alembic upgrade head
 
+# Or use utility script
+python setup_db.py
+```
+
+**Step 3: Compile & Deploy Contract**
 ```bash
 cd contracts
 compact compile ConfidentialRAG.compact
 compact deploy --network local
 ```
 
-## Development Roadmap
+**Step 4: Start Services**
+```bash
+# Backend (terminal 1)
+cd backend
+uvicorn app.main:app --reload --port 8001
 
-### Phase 1: Foundation (MVP)
-- [x] Project structure
-- [ ] Midnight local dev setup
-- [ ] Docker Compose configuration
-- [ ] Basic Compact contract (commitment storage)
+# Frontend (terminal 2)
+cd frontend
+streamlit run app.py --server.port 8501
 
-### Phase 2: RAG Core
-- [ ] Document ingestion API
-- [ ] Embedding generation (sentence-transformers)
-- [ ] Hybrid retrieval (BM25 + vector)
-- [ ] RAGAS evaluation
+# Midnight local network (terminal 3)
+./scripts/start-local-network.sh
+```
 
-### Phase 3: ZK Integration
-- [ ] Commitment generation service
-- [ ] Merkle tree construction
-- [ ] Proof generation (similarity + quality)
-- [ ] Contract integration
+</details>
 
-### Phase 4: UI & Demo
-- [ ] Streamlit interface
-- [ ] Medical dataset preparation
-- [ ] Demo queries and scenarios
+## Project Status
+
+### ✅ Completed
+
+#### Infrastructure
+- [x] Docker Compose configuration (PostgreSQL, ChromaDB, Ollama)
+- [x] Midnight local development environment
+- [x] Database schema and migrations
+- [x] Environment configuration
+
+#### Smart Contract
+- [x] Compact contract with commitment storage
+- [x] Merkle tree-based document verification
+- [x] Nullifier-based replay protection
+- [x] Similarity proof verification circuit
+- [x] Batch query support
+- [x] Contract compilation pipeline
+- [x] Deployment scripts (local/testnet)
+
+#### Backend (FastAPI)
+- [x] Document ingestion API with PDF processing
+- [x] Hybrid retrieval (BM25 + vector search)
+- [x] Embedding generation (sentence-transformers)
+- [x] RAG orchestration with LangChain
+- [x] Cryptographic commitment service
+- [x] Merkle tree construction and proof generation
+- [x] Midnight blockchain integration structure
+- [x] Health monitoring and audit logging
+- [x] RAGAS evaluation framework
+
+#### Frontend (Streamlit)
+- [x] Document upload interface
+- [x] Privacy-preserving query interface
+- [x] Interactive ZK proof visualization
+- [x] Document management with pagination
+- [x] Settings and configuration
+- [x] Real-time health monitoring
+
+#### Development Tools
+- [x] One-command setup script
+- [x] Service management scripts (start/stop/health)
+- [x] Database reset and cleanup utilities
+- [x] Comprehensive test suite
+- [x] Demo dataset (15 medical abstracts)
+- [x] Demo queries with validation
+- [x] End-to-end testing script
+- [x] Makefile with convenient commands
+- [x] npm scripts for Midnight operations
+
+#### Documentation
+- [x] Comprehensive README
+- [x] QUICKSTART guide
+- [x] SETUP_GUIDE with troubleshooting
+- [x] Contract documentation
+- [x] Backend architecture docs
+- [x] Frontend development guide
+- [x] Script reference guide
+- [x] Demo testing scenarios
+
+### 🔄 Ready for Midnight SDK Integration
+
+The following features have placeholder structure ready for real Midnight SDK integration:
+
+- Contract deployment automation (uses placeholder commands)
+- On-chain proof submission (structure complete, needs SDK)
+- Transaction hash tracking (ready for blockchain integration)
+- Real ZK proof verification (Merkle proofs work, awaiting SDK)
 
 ## Hackathon Submission
 
