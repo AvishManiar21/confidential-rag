@@ -16,11 +16,11 @@ class Settings(BaseSettings):
     )
 
     # Database
-    database_url: str = "postgresql+asyncpg://raguser:CHANGE_ME@localhost:5432/confidentialrag"
+    database_url: str  # Required - must be set via environment variable
 
     # ChromaDB
     chroma_url: str = "http://localhost:8000"
-    chroma_auth_token: Optional[str] = None
+    chroma_auth_token: str  # Required - must be set via environment variable
 
     # Ollama
     ollama_url: str = "http://localhost:11434"

@@ -6,15 +6,15 @@ services:
     image: postgres:15-alpine
     container_name: confidential-rag-postgres
     environment:
-      POSTGRES_USER: raguser
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CHANGE_ME}
-      POSTGRES_DB: confidentialrag
+      POSTGRES_USER: ${POSTGRES_USER:-raguser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env file}
+      POSTGRES_DB: ${POSTGRES_DB:-confidentialrag}
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U raguser"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-raguser}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -29,7 +29,7 @@ services:
       - chroma-data:/chroma/chroma
     environment:
       - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=chromadb.auth.token.TokenConfigServerAuthCredentialsProvider
-      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMA_AUTH_TOKEN:-CHANGE_ME}
+      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMA_AUTH_TOKEN:?CHROMA_AUTH_TOKEN must be set in .env file}
       - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthServerProvider
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
@@ -76,11 +76,12 @@ services:
       - ./backend:/app
       - embeddings-cache:/app/embeddings_cache
     environment:
-      - DATABASE_URL=postgresql://raguser:ragpass@postgres:5432/confidentialrag
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-raguser}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-confidentialrag}
       - CHROMA_URL=http://chromadb:8000
-      - CHROMA_AUTH_TOKEN=test-token
+      - CHROMA_AUTH_TOKEN=${CHROMA_AUTH_TOKEN}
       - OLLAMA_URL=http://ollama:11434
-      - MIDNIGHT_RPC_URL=http://localhost:8080
+      - MIDNIGHT_RPC_URL=${MIDNIGHT_RPC_URL:-http://localhost:8080}
+      - SECRET_KEY=${SECRET_KEY}
     depends_on:
       postgres:
         condition: service_healthy
