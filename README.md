@@ -80,7 +80,7 @@ Demo scenario: Healthcare providers query medical literature while preserving pa
 
 ```bash
 # Clone repository
-git clone https://github.com/YOUR_USERNAME/confidential-rag.git
+git clone https://github.com/AvishManiar21/confidential-rag.git
 cd confidential-rag
 
 # One-command setup (installs everything)
