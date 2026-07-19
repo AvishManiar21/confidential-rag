@@ -1,0 +1,52 @@
+{
+  "name": "confidential-rag",
+  "version": "1.0.0",
+  "description": "Privacy-Preserving Document Q&A System using Zero-Knowledge Proofs on Midnight Blockchain",
+  "main": "index.js",
+  "scripts": {
+    "setup": "./scripts/setup-midnight.sh",
+    "setup:all": "./scripts/setup-all.sh",
+    "compile": "cd contracts && compact compile ConfidentialRAG.compact",
+    "deploy": "./scripts/deploy-contract.sh local",
+    "deploy:local": "./scripts/deploy-contract.sh local",
+    "deploy:testnet": "./scripts/deploy-contract.sh testnet",
+    "test:contract": "cd contracts && compact test",
+    "start": "./scripts/start-all.sh",
+    "start:network": "./scripts/start-local-network.sh",
+    "stop": "./scripts/stop-all.sh",
+    "status": "./scripts/check-midnight-status.sh",
+    "health": "./scripts/health-check.sh",
+    "reset:db": "./scripts/reset-db.sh",
+    "test": "./scripts/run-tests.sh",
+    "demo:upload": "python demo/upload-demo-data.py",
+    "demo:query": "python demo/run-demo-queries.py",
+    "demo:e2e": "python demo/test-e2e.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/confidential-rag.git"
+  },
+  "keywords": [
+    "midnight",
+    "zero-knowledge",
+    "rag",
+    "privacy",
+    "blockchain",
+    "ai",
+    "zkp",
+    "compact",
+    "medical",
+    "confidential"
+  ],
+  "author": "ConfidentialRAG Team",
+  "license": "MIT",
+  "dependencies": {
+    "@midnight-ntwrk/compact-cli": "^0.1.0",
+    "@midnight-ntwrk/midnight-cli": "^0.1.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

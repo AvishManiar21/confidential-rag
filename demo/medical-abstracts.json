@@ -1,0 +1,137 @@
+[
+  {
+    "id": "med_001",
+    "title": "Efficacy of Metformin in Type 2 Diabetes Management",
+    "authors": ["Johnson, A.M.", "Smith, P.R.", "Williams, K.L."],
+    "journal": "Journal of Endocrinology and Metabolism",
+    "year": 2023,
+    "abstract": "Metformin remains the first-line pharmacological treatment for type 2 diabetes mellitus. This meta-analysis of 47 randomized controlled trials involving 12,834 patients demonstrates that metformin reduces HbA1c levels by an average of 1.12% compared to placebo. Additionally, metformin shows cardiovascular benefits, reducing major adverse cardiovascular events by 26% in high-risk patients. The medication is generally well-tolerated, with gastrointestinal side effects being the most common adverse reaction, occurring in approximately 15% of patients. Dose titration and extended-release formulations can minimize these effects.",
+    "keywords": ["metformin", "type 2 diabetes", "HbA1c", "cardiovascular", "glucose control"]
+  },
+  {
+    "id": "med_002",
+    "title": "Antibiotic Resistance Patterns in Hospital-Acquired Pneumonia",
+    "authors": ["Chen, L.W.", "Rodriguez, M.A.", "Patel, S.K."],
+    "journal": "Clinical Infectious Diseases",
+    "year": 2024,
+    "abstract": "Hospital-acquired pneumonia (HAP) represents a significant clinical challenge due to increasing antimicrobial resistance. Analysis of 3,245 HAP cases across 28 hospitals revealed that 34% of isolates were resistant to multiple antibiotics. Methicillin-resistant Staphylococcus aureus (MRSA) accounted for 22% of cases, while carbapenem-resistant Enterobacteriaceae (CRE) were identified in 8%. Early appropriate empiric therapy combining vancomycin or linezolid with a broad-spectrum beta-lactam improved 30-day mortality from 31% to 19%. Antimicrobial stewardship programs are essential for preserving antibiotic efficacy.",
+    "keywords": ["antibiotic resistance", "pneumonia", "MRSA", "hospital-acquired infection", "antimicrobial stewardship"]
+  },
+  {
+    "id": "med_003",
+    "title": "Machine Learning for Early Detection of Sepsis in ICU Patients",
+    "authors": ["Zhang, Y.", "Kumar, R.", "Thompson, E.J."],
+    "journal": "Critical Care Medicine",
+    "year": 2024,
+    "abstract": "Sepsis remains a leading cause of mortality in intensive care units. We developed a machine learning model using gradient boosting that analyzes vital signs, laboratory values, and clinical notes to predict sepsis onset 6 hours before clinical diagnosis. The model achieved an AUROC of 0.89 with sensitivity of 0.82 and specificity of 0.85 when validated on 8,712 ICU admissions. Key predictive features included lactate levels, mean arterial pressure trends, white blood cell count, and heart rate variability. Early prediction enables timely intervention with antimicrobials and fluid resuscitation, potentially reducing mortality by 15-20%.",
+    "keywords": ["sepsis", "machine learning", "ICU", "early detection", "prediction model"]
+  },
+  {
+    "id": "med_004",
+    "title": "Impact of Mediterranean Diet on Cardiovascular Health: 10-Year Follow-up",
+    "authors": ["Martinez, C.", "Olsen, K.B.", "Fernandez, L.M."],
+    "journal": "New England Journal of Medicine",
+    "year": 2023,
+    "abstract": "The PREDIMED-Plus trial followed 7,447 adults at high cardiovascular risk for 10 years to assess the impact of a Mediterranean diet supplemented with extra-virgin olive oil or nuts. Participants adhering to the Mediterranean diet showed a 31% reduction in major cardiovascular events (myocardial infarction, stroke, or cardiovascular death) compared to the control group. The diet was associated with improvements in lipid profiles, with LDL cholesterol decreasing by an average of 0.39 mmol/L and HDL cholesterol increasing by 0.12 mmol/L. Weight loss averaged 2.8 kg, and systolic blood pressure decreased by 5.4 mmHg.",
+    "keywords": ["Mediterranean diet", "cardiovascular disease", "prevention", "nutrition", "clinical trial"]
+  },
+  {
+    "id": "med_005",
+    "title": "Novel Immunotherapy Approaches in Metastatic Melanoma",
+    "authors": ["Anderson, T.R.", "Kim, S.H.", "Walsh, D.P."],
+    "journal": "Journal of Clinical Oncology",
+    "year": 2024,
+    "abstract": "Combination immunotherapy using anti-PD-1 and anti-CTLA-4 antibodies has revolutionized treatment of metastatic melanoma. This phase III trial of 945 patients demonstrated that nivolumab plus ipilimumab achieved a median overall survival of 72.1 months compared to 36.9 months with nivolumab alone. The objective response rate was 58% in the combination arm versus 45% with monotherapy. However, grade 3-4 immune-related adverse events occurred in 59% of combination patients compared to 23% with nivolumab alone. Biomarkers including tumor mutational burden and PD-L1 expression helped predict treatment response.",
+    "keywords": ["melanoma", "immunotherapy", "PD-1", "CTLA-4", "checkpoint inhibitors"]
+  },
+  {
+    "id": "med_006",
+    "title": "Ketogenic Diet Effects on Drug-Resistant Epilepsy in Children",
+    "authors": ["Baker, M.L.", "Nguyen, T.V.", "Harrison, J.K."],
+    "journal": "Pediatric Neurology",
+    "year": 2023,
+    "abstract": "The ketogenic diet (KD) offers a non-pharmacological treatment option for children with drug-resistant epilepsy. Our multicenter study of 312 children aged 2-16 years with epilepsy refractory to at least three antiepileptic drugs showed that 55% experienced >50% seizure reduction after 6 months on KD. Complete seizure freedom was achieved in 13% of patients. The diet was most effective in patients with glucose transporter type 1 deficiency syndrome (GLUT1-DS) and Dravet syndrome. Common side effects included constipation (28%), growth deceleration (15%), and hyperlipidemia (12%), which were manageable with dietary modifications and supplements.",
+    "keywords": ["ketogenic diet", "epilepsy", "pediatric", "seizures", "drug-resistant"]
+  },
+  {
+    "id": "med_007",
+    "title": "CRISPR-Cas9 Gene Editing for Sickle Cell Disease: Clinical Trial Results",
+    "authors": ["Williams, R.A.", "Jackson, M.D.", "Lee, C.Y."],
+    "journal": "Nature Medicine",
+    "year": 2024,
+    "abstract": "Gene editing using CRISPR-Cas9 technology offers curative potential for sickle cell disease (SCD). In this phase I/II trial, 45 patients with severe SCD underwent autologous hematopoietic stem cell transplantation after ex vivo CRISPR-Cas9 editing to reactivate fetal hemoglobin (HbF) production. At 24-month follow-up, 93% of patients were transfusion-independent, with mean HbF levels of 46%. Vaso-occlusive crises decreased from a median of 5.4 to 0.8 events per year. No off-target editing effects were detected. Two patients experienced grade 3 thrombocytopenia that resolved spontaneously. This represents a significant advance in curative therapy for SCD.",
+    "keywords": ["CRISPR", "gene editing", "sickle cell disease", "fetal hemoglobin", "stem cell therapy"]
+  },
+  {
+    "id": "med_008",
+    "title": "Long COVID: Neurological Manifestations and Rehabilitation Outcomes",
+    "authors": ["Peterson, S.M.", "Garcia, L.R.", "Wong, K.T."],
+    "journal": "The Lancet Neurology",
+    "year": 2024,
+    "abstract": "Post-acute sequelae of SARS-CoV-2 infection (PASC), or Long COVID, affects an estimated 10-30% of COVID-19 survivors. This cohort study of 2,834 patients identified persistent neurological symptoms in 68% at 6 months post-infection. The most common manifestations were cognitive impairment (45%), chronic fatigue (52%), headache (38%), and dysautonomia (22%). MRI findings showed subtle white matter changes in 31% of patients with cognitive symptoms. A structured multidisciplinary rehabilitation program combining cognitive therapy, graded exercise, and autonomic retraining improved functional outcomes in 73% of participants, with significant improvements in Modified Fatigue Impact Scale scores.",
+    "keywords": ["Long COVID", "PASC", "neurological symptoms", "cognitive impairment", "rehabilitation"]
+  },
+  {
+    "id": "med_009",
+    "title": "Artificial Pancreas Systems in Type 1 Diabetes: Real-World Performance",
+    "authors": ["Miller, J.F.", "Cohen, D.L.", "Ramirez, P.A."],
+    "journal": "Diabetes Technology & Therapeutics",
+    "year": 2023,
+    "abstract": "Hybrid closed-loop insulin delivery systems (artificial pancreas) improve glycemic control in type 1 diabetes. Analysis of real-world data from 1,923 users over 12 months showed that time in range (70-180 mg/dL) increased from 58% at baseline to 74% with hybrid closed-loop therapy. HbA1c decreased by 0.7%, and severe hypoglycemia events reduced by 67%. User satisfaction was high, with 89% of participants continuing use after 12 months. The system performed well across diverse populations, including children, pregnant women, and older adults. Algorithm improvements continue to enhance performance, particularly during exercise and illness.",
+    "keywords": ["artificial pancreas", "type 1 diabetes", "closed-loop insulin delivery", "continuous glucose monitoring", "time in range"]
+  },
+  {
+    "id": "med_010",
+    "title": "Gut Microbiome Modulation in Inflammatory Bowel Disease Treatment",
+    "authors": ["O'Connor, B.T.", "Yamamoto, H.", "Singh, A.K."],
+    "journal": "Gastroenterology",
+    "year": 2024,
+    "abstract": "Dysbiosis of the gut microbiome plays a critical role in inflammatory bowel disease (IBD) pathogenesis. This randomized trial evaluated fecal microbiota transplantation (FMT) versus placebo in 246 patients with moderate ulcerative colitis. Clinical remission at 8 weeks was achieved in 42% of FMT recipients compared to 15% receiving placebo. Microbiome analysis revealed restoration of Faecalibacterium prausnitzii and Roseburia species in responders. The therapy was well-tolerated, with transient bloating being the most common side effect. Repeated FMT at 4-week intervals maintained remission in 67% of initial responders at 1-year follow-up. Donor selection and standardization remain key challenges for clinical implementation.",
+    "keywords": ["gut microbiome", "inflammatory bowel disease", "fecal microbiota transplantation", "ulcerative colitis", "dysbiosis"]
+  },
+  {
+    "id": "med_011",
+    "title": "Telemedicine for Chronic Disease Management: Cost-Effectiveness Analysis",
+    "authors": ["Davis, K.M.", "Liu, X.F.", "Thompson, R.J."],
+    "journal": "JAMA Internal Medicine",
+    "year": 2023,
+    "abstract": "Telemedicine has expanded rapidly for chronic disease management. This economic evaluation of 5,612 patients with diabetes, hypertension, or heart failure compared telemedicine-based care to traditional in-person visits over 18 months. Telemedicine reduced healthcare costs by $2,847 per patient annually, primarily through decreased emergency department visits (38% reduction) and hospitalizations (24% reduction). Clinical outcomes were non-inferior, with equivalent HbA1c control in diabetics and blood pressure control in hypertensives. Patient satisfaction scores were higher for telemedicine (4.6/5 vs 3.9/5). Rural patients and those with transportation barriers showed the greatest benefit from remote care delivery.",
+    "keywords": ["telemedicine", "chronic disease", "cost-effectiveness", "remote monitoring", "patient satisfaction"]
+  },
+  {
+    "id": "med_012",
+    "title": "Targeted Temperature Management After Cardiac Arrest: Updated Guidelines",
+    "authors": ["Lindholm, P.E.", "Sharma, V.K.", "Bennett, L.A."],
+    "journal": "Circulation",
+    "year": 2024,
+    "abstract": "Targeted temperature management (TTM) improves neurological outcomes in comatose cardiac arrest survivors. Updated analysis of the TTM2 trial with 1,900 patients found that maintaining normothermia (targeting 37.5°C) was non-inferior to therapeutic hypothermia (33°C) for favorable neurological outcomes at 6 months (52% vs 50%, p=0.36). However, fever prevention (temperature <37.8°C) was critical, as each degree above 38°C increased mortality by 12%. Early initiation of TTM within 2 hours post-arrest and maintaining target temperature for at least 24 hours were associated with better outcomes. These findings support a more flexible approach to temperature management tailored to individual patient factors.",
+    "keywords": ["cardiac arrest", "targeted temperature management", "therapeutic hypothermia", "neuroprotection", "resuscitation"]
+  },
+  {
+    "id": "med_013",
+    "title": "Vitamin D Supplementation and Respiratory Tract Infections: Meta-Analysis",
+    "authors": ["Morrison, T.L.", "Hassan, F.M.", "Cooper, J.R."],
+    "journal": "British Medical Journal",
+    "year": 2023,
+    "abstract": "Vitamin D deficiency has been linked to increased susceptibility to respiratory infections. This systematic review and meta-analysis of 43 randomized controlled trials encompassing 48,488 participants examined whether vitamin D supplementation reduces respiratory tract infection risk. Overall, vitamin D supplementation reduced acute respiratory tract infections by 19% (OR 0.81, 95% CI 0.75-0.88). The protective effect was strongest in individuals with baseline 25-hydroxyvitamin D levels <25 nmol/L (42% reduction) and with daily or weekly dosing rather than large bolus doses. Optimal dosing appeared to be 1000-2000 IU daily. No serious adverse events were attributed to supplementation.",
+    "keywords": ["vitamin D", "respiratory infection", "supplementation", "prevention", "immune function"]
+  },
+  {
+    "id": "med_014",
+    "title": "Novel Oral Anticoagulants vs Warfarin in Atrial Fibrillation: Real-World Outcomes",
+    "authors": ["Green, A.P.", "Nakamura, Y.", "Foster, M.B."],
+    "journal": "Journal of the American College of Cardiology",
+    "year": 2024,
+    "abstract": "Direct oral anticoagulants (DOACs) have become preferred alternatives to warfarin for stroke prevention in atrial fibrillation. This retrospective cohort study of 127,843 patients compared outcomes between DOACs (apixaban, rivaroxaban, dabigatran, edoxaban) and warfarin. DOACs reduced ischemic stroke risk by 21% and major bleeding by 28% compared to warfarin. Apixaban showed the most favorable safety profile with the lowest rates of major bleeding (2.1% vs 3.8% with warfarin). Intracranial hemorrhage was reduced by 52% across all DOACs. Adherence rates were higher for DOACs (87% vs 72% for warfarin), likely due to the absence of routine monitoring requirements. Cost-effectiveness models favored DOACs despite higher medication costs.",
+    "keywords": ["anticoagulation", "atrial fibrillation", "stroke prevention", "DOACs", "warfarin"]
+  },
+  {
+    "id": "med_015",
+    "title": "Mindfulness-Based Interventions for Chronic Pain: Neuroimaging Evidence",
+    "authors": ["Anderson, C.W.", "Zhou, L.", "Parker, S.D."],
+    "journal": "Pain Medicine",
+    "year": 2023,
+    "abstract": "Mindfulness-based stress reduction (MBSR) shows promise for chronic pain management. This neuroimaging study combined fMRI with an 8-week MBSR program in 156 chronic pain patients. Pain intensity decreased by 32% (VAS score from 6.8 to 4.6), with corresponding changes in brain activity. fMRI revealed decreased activation in the anterior cingulate cortex and insula during pain stimulation, alongside increased connectivity between prefrontal regulatory regions and pain-processing areas. Gray matter density increased in the hippocampus and prefrontal cortex. Clinical improvements persisted at 6-month follow-up, with 68% of participants maintaining >30% pain reduction. These findings provide neural evidence for mindfulness as a non-pharmacological pain intervention.",
+    "keywords": ["mindfulness", "chronic pain", "fMRI", "neuroplasticity", "MBSR"]
+  }
+]

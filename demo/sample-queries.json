@@ -1,0 +1,72 @@
+[
+  {
+    "id": "query_001",
+    "query": "What are the treatment options for type 2 diabetes?",
+    "expected_docs": ["med_001"],
+    "description": "Simple keyword match - should retrieve metformin study",
+    "expected_concepts": ["metformin", "HbA1c", "glucose control"]
+  },
+  {
+    "id": "query_002",
+    "query": "How effective is immunotherapy for melanoma patients?",
+    "expected_docs": ["med_005"],
+    "description": "Medical terminology match - should retrieve melanoma immunotherapy trial",
+    "expected_concepts": ["PD-1", "CTLA-4", "nivolumab", "checkpoint inhibitors"]
+  },
+  {
+    "id": "query_003",
+    "query": "What dietary interventions reduce cardiovascular disease risk?",
+    "expected_docs": ["med_004"],
+    "description": "Conceptual match - should retrieve Mediterranean diet study",
+    "expected_concepts": ["Mediterranean diet", "cardiovascular", "LDL cholesterol"]
+  },
+  {
+    "id": "query_004",
+    "query": "Can machine learning predict sepsis in ICU patients?",
+    "expected_docs": ["med_003"],
+    "description": "Multi-concept query - AI + critical care",
+    "expected_concepts": ["machine learning", "sepsis", "ICU", "prediction"]
+  },
+  {
+    "id": "query_005",
+    "query": "Are there antibiotic-resistant bacteria in hospitals?",
+    "expected_docs": ["med_002"],
+    "description": "Simple yes/no question - should retrieve HAP resistance study",
+    "expected_concepts": ["antibiotic resistance", "MRSA", "hospital-acquired"]
+  },
+  {
+    "id": "query_006",
+    "query": "What are the long-term neurological effects of COVID-19 infection?",
+    "expected_docs": ["med_008"],
+    "description": "Current topic - Long COVID neurological symptoms",
+    "expected_concepts": ["Long COVID", "PASC", "cognitive impairment", "neurological"]
+  },
+  {
+    "id": "query_007",
+    "query": "How do you treat drug-resistant epilepsy in children?",
+    "expected_docs": ["med_006"],
+    "description": "Specific population + condition - pediatric epilepsy",
+    "expected_concepts": ["ketogenic diet", "epilepsy", "pediatric", "drug-resistant"]
+  },
+  {
+    "id": "query_008",
+    "query": "Can gene editing cure sickle cell disease?",
+    "expected_docs": ["med_007"],
+    "description": "Cutting-edge therapy - CRISPR for genetic disorder",
+    "expected_concepts": ["CRISPR", "gene editing", "sickle cell", "fetal hemoglobin"]
+  },
+  {
+    "id": "query_009",
+    "query": "What is the role of gut bacteria in inflammatory bowel disease?",
+    "expected_docs": ["med_010"],
+    "description": "Microbiome-focused query - IBD and dysbiosis",
+    "expected_concepts": ["gut microbiome", "inflammatory bowel disease", "fecal microbiota"]
+  },
+  {
+    "id": "query_010",
+    "query": "Does vitamin D prevent respiratory infections?",
+    "expected_docs": ["med_013"],
+    "description": "Supplement + prevention - vitamin D meta-analysis",
+    "expected_concepts": ["vitamin D", "respiratory infection", "supplementation"]
+  }
+]
